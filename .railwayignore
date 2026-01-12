@@ -1,0 +1,16 @@
+# Ignore frontend source files - Railway should only deploy backend
+features/
+components/
+public/
+*.tsx
+*.ts
+!server/**/*.ts
+!server/**/*.tsx
+vite.config.ts
+tsconfig.json
+index.html
+
+# Ignore build outputs
+dist/
+node_modules/
+.git/

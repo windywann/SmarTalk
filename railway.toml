@@ -1,11 +1,15 @@
 [build]
 builder = "nixpacks"
 
+[build.nixpacks]
+# Install Python dependencies
+beforeBuild = "pip3 install -r server/requirements.txt"
+
 [deploy]
 startCommand = "node server/index.js"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
 
-[[build.nixpacks.phase]]
-name = "install-python-deps"
-cmds = ["pip3 install -r server/requirements.txt"]
+[env]
+PORT = "5176"
+
