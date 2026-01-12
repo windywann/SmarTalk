@@ -3,6 +3,8 @@ import { Mic, Square, RefreshCw, ChevronRight, ChevronLeft, Video, VideoOff, Set
 import { ExamState, Message, FeedbackData, ExaminerTurnResponse } from '../types';
 import Button from '../components/Button';
 import Modal from '../components/Modal';
+import { buildApiUrl, buildWsUrl } from '../config';
+
 
 // Examiner Data Definitions
 const EXAMINERS = [
@@ -186,7 +188,7 @@ const IeltsExam: React.FC<IeltsExamProps> = ({ onExamStatusChange }) => {
   ): Promise<{ text: string; meta?: any }> => {
     console.log(`[LLM] Calling API: part=${currentPart}, q_count=${questionCount}, msg_count=${llmMessages.length}`);
 
-    const resp = await fetch('/api/v1/ielts/examiner/stream', {
+    const resp = await fetch(buildApiUrl('/api/v1/ielts/examiner/stream'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -398,7 +400,7 @@ const IeltsExam: React.FC<IeltsExamProps> = ({ onExamStatusChange }) => {
       const ctrl = new AbortController();
       ttsAbortRef.current = ctrl;
 
-      const resp = await fetch('/api/v1/tts/stream', {
+      const resp = await fetch(buildApiUrl('/api/v1/tts/stream'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -593,9 +595,7 @@ const IeltsExam: React.FC<IeltsExamProps> = ({ onExamStatusChange }) => {
       autoStopGuardRef.current = false;
       setTranscript('');
 
-      const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-      // Bypass Vite proxy for WebSocket stability, connect directly to backend port 5176
-      const wsUrl = `${proto}://${window.location.hostname}:5176/api/v1/asr/realtime/ws?language=en&threshold=0.0&silenceMs=400`;
+      const wsUrl = buildWsUrl('/api/v1/asr/realtime/ws?language=en&threshold=0.0&silenceMs=400');
       console.log('[ASR] Connecting to WebSocket:', wsUrl);
       const ws = new WebSocket(wsUrl);
       asrWsRef.current = ws;
@@ -848,7 +848,7 @@ const IeltsExam: React.FC<IeltsExamProps> = ({ onExamStatusChange }) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-      const resp = await fetch('/api/v1/ielts/feedback', {
+      const resp = await fetch(buildApiUrl('/api/v1/ielts/feedback'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
