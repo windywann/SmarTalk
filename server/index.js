@@ -59,6 +59,18 @@ function sseSend(res, data) {
 
 // ...
 const server = http.createServer(async (req, res) => {
+  // CORS Headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.writeHead(200);
+    res.end();
+    return;
+  }
+
   const reqStart = Date.now();
   const url = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
   const { pathname } = url;
@@ -541,9 +553,9 @@ wss.on('connection', (ws, req) => {
   });
 });
 
-server.listen(PORT, '127.0.0.1', () => {
+server.listen(PORT, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
-  console.log(`[smartalk-bff] listening on http://localhost:${PORT}`);
+  console.log(`[smartalk-bff] listening on http://0.0.0.0:${PORT}`);
   // eslint-disable-next-line no-console
   console.log(`[smartalk-bff] health: http://localhost:${PORT}/api/health`);
   // eslint-disable-next-line no-console
