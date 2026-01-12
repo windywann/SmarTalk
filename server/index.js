@@ -67,6 +67,29 @@ const server = http.createServer(async (req, res) => {
   // Log incoming requests
   console.log(`[REQ] ${method} ${pathname}`);
 
+  // CORS Headers
+  const origin = req.headers.origin;
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'https://smartalk-oven.vercel.app',
+    'https://smartalk-orcin.vercel.app'
+  ];
+
+  // Allow requests from allowed origins or all origins if in development (flexible)
+  // For better security in production, you might want to strict check allowedOrigins
+  res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Custom-Header');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  // Handle preflight OPTIONS request
+  if (method === 'OPTIONS') {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
   res.on('finish', () => {
     console.log(`[RES] ${method} ${pathname} ${res.statusCode} (${Date.now() - reqStart}ms)`);
   });
