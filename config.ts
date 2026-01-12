@@ -5,6 +5,8 @@
 
 export const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5176';
 
+console.log('[Config] API_BASE:', API_BASE); // Debug log
+
 // Helper function to build API URLs
 export function buildApiUrl(path: string): string {
     // Remove leading slash if present to avoid double slashes
