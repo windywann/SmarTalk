@@ -16,7 +16,8 @@ try {
   // ignore
 }
 
-const PORT = Number(process.env.PORT || 5176);
+// Force port 5176 for stability
+const PORT = 5176;
 const PYTHON_BIN =
   process.env.PYTHON ||
   (fs.existsSync(`${process.cwd()}/.venv/bin/python3`) ? `${process.cwd()}/.venv/bin/python3` : 'python3');
