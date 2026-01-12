@@ -1,0 +1,8 @@
+{
+  "name": "FluentFlow - 雅思口语 & 影子跟读",
+  "description": "专业的英语口语练习平台，提供AI驱动的雅思口语模拟考试和影子跟读训练系统。",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
