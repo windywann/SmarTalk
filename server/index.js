@@ -16,8 +16,8 @@ try {
   // ignore
 }
 
-// Force port 5176 for stability
-const PORT = 5176;
+// Use Railway's injected PORT, or fallback to 5176 locally
+const PORT = Number(process.env.PORT) || 5176;
 const PYTHON_BIN =
   process.env.PYTHON ||
   (fs.existsSync(`${process.cwd()}/.venv/bin/python3`) ? `${process.cwd()}/.venv/bin/python3` : 'python3');
@@ -569,7 +569,7 @@ wss.on('connection', (ws, req) => {
 // In local development, this still works fine
 server.listen(PORT, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
-  console.log(`[smartalk-bff] listening on http://0.0.0.0:${PORT}`);
+  console.log(`[smartalk-bff] listening on http://0.0.0.0:${PORT} (Railway PORT env: ${process.env.PORT})`);
   // eslint-disable-next-line no-console
   console.log(`[smartalk-bff] health: http://localhost:${PORT}/api/health`);
   // eslint-disable-next-line no-console
