@@ -4,7 +4,11 @@ import { ExamState, Message, FeedbackData, ExaminerTurnResponse } from '../types
 import Button from '../components/Button';
 import Modal from '../components/Modal';
 
-// Examiner Data Definitions
+// Hardcoded Railway Backend for Production
+const API_BASE = import.meta.env.PROD
+  ? 'https://smartalk-production-4b65.up.railway.app'
+  : ''; // In dev, use proxy
+
 const EXAMINERS = [
   {
     id: 'alex',
@@ -186,16 +190,15 @@ const IeltsExam: React.FC<IeltsExamProps> = ({ onExamStatusChange }) => {
   ): Promise<{ text: string; meta?: any }> => {
     console.log(`[LLM] Calling API: part=${currentPart}, q_count=${questionCount}, msg_count=${llmMessages.length}`);
 
-    const resp = await fetch('/api/v1/ielts/examiner/stream', {
+    // Use correct endpoint for streaming
+    const resp = await fetch(`${API_BASE}/api/v1/ielts/examiner/stream`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        messages: llmMessages, // Kept original `llmMessages` as `historyWithoutSystem` is undefined
         model: 'qwen-plus',
-        temperature: 0.7,
-        messages: llmMessages,
-        // NEW: Send state params
         part: currentPart,
-        questionCount: questionCount,
+        questionCount: questionCount
       }),
     });
 
@@ -398,7 +401,7 @@ const IeltsExam: React.FC<IeltsExamProps> = ({ onExamStatusChange }) => {
       const ctrl = new AbortController();
       ttsAbortRef.current = ctrl;
 
-      const resp = await fetch('/api/v1/tts/stream', {
+      const resp = await fetch(`${API_BASE}/api/v1/tts/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -593,9 +596,16 @@ const IeltsExam: React.FC<IeltsExamProps> = ({ onExamStatusChange }) => {
       autoStopGuardRef.current = false;
       setTranscript('');
 
-      const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-      // Bypass Vite proxy for WebSocket stability, connect directly to backend port 5176
-      const wsUrl = `${proto}://${window.location.hostname}:5176/api/v1/asr/realtime/ws?language=en&threshold=0.0&silenceMs=400`;
+      let wsUrl = '';
+      if (API_BASE) {
+        // Production: Use API_BASE (replace https -> wss, http -> ws)
+        const wsBase = API_BASE.replace(/^http/, 'ws');
+        wsUrl = `${wsBase}/api/v1/asr/realtime/ws?language=en&threshold=0.0&silenceMs=400`;
+      } else {
+        // Dev: Localhost direct connect (bypass Vite proxy for stability)
+        const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        wsUrl = `${proto}://${window.location.hostname}:5176/api/v1/asr/realtime/ws?language=en&threshold=0.0&silenceMs=400`;
+      }
       console.log('[ASR] Connecting to WebSocket:', wsUrl);
       const ws = new WebSocket(wsUrl);
       asrWsRef.current = ws;
@@ -848,7 +858,7 @@ const IeltsExam: React.FC<IeltsExamProps> = ({ onExamStatusChange }) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-      const resp = await fetch('/api/v1/ielts/feedback', {
+      const resp = await fetch(`${API_BASE}/api/v1/ielts/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
