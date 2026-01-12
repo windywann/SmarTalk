@@ -9,7 +9,8 @@ beforeBuild = "pip3 install -r server/requirements.txt"
 startCommand = "node server/index.js"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10
+healthcheckPath = "/api/health"
+healthcheckTimeout = 100
 
-[env]
 PORT = "5176"
 

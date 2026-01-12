@@ -95,9 +95,9 @@ const server = http.createServer(async (req, res) => {
   });
 
   try {
-    // Health
-    // ...
-    if (method === 'GET' && pathname === '/api/health') {
+    // Health Check - Support both GET and HEAD
+    if (pathname === '/api/health' || pathname === '/') {
+      console.log('[HEALTH] Check received');
       return json(res, 200, { ok: true, service: 'smartalk-bff', time: new Date().toISOString() });
     }
 
