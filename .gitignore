@@ -1,16 +1,6 @@
-# Python
 .venv/
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-
-# Environment variables
 ENV.local
 server/ENV.local
-.env
-.env.local
-
 # Logs
 logs
 *.log
@@ -20,7 +10,6 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Dependencies
 node_modules
 dist
 dist-ssr
@@ -36,15 +25,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Test files
-/tmp/
-*.pcm
-*.wav
-*.mp3
-server/result_*.pcm
-
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride

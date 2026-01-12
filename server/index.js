@@ -16,8 +16,7 @@ try {
   // ignore
 }
 
-// Use Railway's injected PORT, or fallback to 5176 locally
-const PORT = Number(process.env.PORT) || 5176;
+const PORT = Number(process.env.PORT || 5176);
 const PYTHON_BIN =
   process.env.PYTHON ||
   (fs.existsSync(`${process.cwd()}/.venv/bin/python3`) ? `${process.cwd()}/.venv/bin/python3` : 'python3');
@@ -68,37 +67,14 @@ const server = http.createServer(async (req, res) => {
   // Log incoming requests
   console.log(`[REQ] ${method} ${pathname}`);
 
-  // CORS Headers
-  const origin = req.headers.origin;
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'https://smartalk-oven.vercel.app',
-    'https://smartalk-orcin.vercel.app'
-  ];
-
-  // Allow requests from allowed origins or all origins if in development (flexible)
-  // For better security in production, you might want to strict check allowedOrigins
-  res.setHeader('Access-Control-Allow-Origin', origin || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Custom-Header');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-
-  // Handle preflight OPTIONS request
-  if (method === 'OPTIONS') {
-    res.writeHead(204);
-    res.end();
-    return;
-  }
-
   res.on('finish', () => {
     console.log(`[RES] ${method} ${pathname} ${res.statusCode} (${Date.now() - reqStart}ms)`);
   });
 
   try {
-    // Health Check - Support both GET and HEAD
-    if (pathname === '/api/health' || pathname === '/') {
-      console.log('[HEALTH] Check received');
+    // Health
+    // ...
+    if (method === 'GET' && pathname === '/api/health') {
       return json(res, 200, { ok: true, service: 'smartalk-bff', time: new Date().toISOString() });
     }
 
@@ -565,11 +541,9 @@ wss.on('connection', (ws, req) => {
   });
 });
 
-// Listen on 0.0.0.0 for cloud deployment (Railway, etc.)
-// In local development, this still works fine
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '127.0.0.1', () => {
   // eslint-disable-next-line no-console
-  console.log(`[smartalk-bff] listening on http://0.0.0.0:${PORT} (Railway PORT env: ${process.env.PORT})`);
+  console.log(`[smartalk-bff] listening on http://localhost:${PORT}`);
   // eslint-disable-next-line no-console
   console.log(`[smartalk-bff] health: http://localhost:${PORT}/api/health`);
   // eslint-disable-next-line no-console
