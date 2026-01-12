@@ -541,9 +541,11 @@ wss.on('connection', (ws, req) => {
   });
 });
 
-server.listen(PORT, '127.0.0.1', () => {
+// Listen on 0.0.0.0 for cloud deployment (Railway, etc.)
+// In local development, this still works fine
+server.listen(PORT, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
-  console.log(`[smartalk-bff] listening on http://localhost:${PORT}`);
+  console.log(`[smartalk-bff] listening on http://0.0.0.0:${PORT}`);
   // eslint-disable-next-line no-console
   console.log(`[smartalk-bff] health: http://localhost:${PORT}/api/health`);
   // eslint-disable-next-line no-console
